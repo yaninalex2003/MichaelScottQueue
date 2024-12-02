@@ -4,6 +4,7 @@ import org.jetbrains.kotlinx.lincheck.annotations.Operation
 import org.jetbrains.kotlinx.lincheck.check
 import org.jetbrains.kotlinx.lincheck.strategy.stress.StressOptions
 import org.junit.jupiter.api.Test
+import java.util.*
 
 internal interface MSQueueTest {
     val queue: MichaelScottQueue<Int>
@@ -35,4 +36,22 @@ class MichaelScottQueueTest {
         StressOptions()
             .threads(1)
             .check(MSQueueTestImpl::class)
+
+    @Test
+    fun stressOptionsSequentialSpecification() =
+        StressOptions()
+            .sequentialSpecification(SequentialQueue::class.java)
+            .check(MSQueueTestImpl::class)
+}
+
+class SequentialQueue {
+    private val queue = LinkedList<Int>()
+
+    fun enqueue(x: Int) {
+        queue.add(x)
+    }
+
+    fun dequeue(): Int {
+        return queue.poll() ?: throw Exception("dequeue from empty queue")
+    }
 }
