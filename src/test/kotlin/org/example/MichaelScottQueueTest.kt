@@ -2,6 +2,7 @@ package org.example
 
 import org.jetbrains.kotlinx.lincheck.annotations.Operation
 import org.jetbrains.kotlinx.lincheck.check
+import org.jetbrains.kotlinx.lincheck.strategy.managed.modelchecking.ModelCheckingOptions
 import org.jetbrains.kotlinx.lincheck.strategy.stress.StressOptions
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -21,7 +22,7 @@ internal interface MSQueueTest {
 
 }
 
-internal class MSQueueTestImpl: MSQueueTest {
+internal class MSQueueTestImpl : MSQueueTest {
     override val queue = MichaelScottQueue<Int>()
 }
 
@@ -41,6 +42,17 @@ class MichaelScottQueueTest {
     fun stressOptionsSequentialSpecification() =
         StressOptions()
             .sequentialSpecification(SequentialQueue::class.java)
+            .check(MSQueueTestImpl::class)
+
+    @Test
+    fun modelChecking() =
+        ModelCheckingOptions()
+            .check(MSQueueTestImpl::class)
+
+    @Test
+    fun modelCheckingObstructionFreedom() =
+        ModelCheckingOptions()
+            .checkObstructionFreedom()
             .check(MSQueueTestImpl::class)
 }
 
